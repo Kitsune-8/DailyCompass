@@ -1,13 +1,20 @@
 package com.example.dailycompass.habits;
 
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -20,8 +27,7 @@ import com.example.dailycompass.R;
 import com.example.dailycompass.data.AppDatabase;
 import com.example.dailycompass.data.HabitDao;
 import com.example.dailycompass.models.Habit;
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.example.dailycompass.utils.ReminderAlarmManager;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.Calendar;
@@ -30,28 +36,28 @@ import java.util.concurrent.Executors;
 
 public class AddEditHabitActivity extends AppCompatActivity {
 
-    // UI элементы
     private TextInputEditText etName;
     private AutoCompleteTextView actFrequency;
     private TextInputEditText etReminderTime;
     private TextInputEditText etTriggerCondition;
     private LinearLayout colorContainer;
-    private MaterialButtonToggleGroup toggleTargetDays;
+    private RadioGroup rgTargetDays;
+    private RadioButton rb7Days;
+    private RadioButton rb21Days;
+    private RadioButton rb100Days;
     private Button btnSave;
     private Button btnCancel;
 
-    // Данные
-    private Habit editHabit; // Если null - добавление, если не null - редактирование
-    private String selectedColor = "#4CAF50"; // цвет по умолчанию
-    private int selectedTargetDays = 7; // цель по умолчанию
+    private Habit editHabit;
+    private String selectedColor = "#4CAF50";
+    private int selectedTargetDays = 7;
     private String selectedFrequency = "daily";
+    private boolean isEditMode = false; // Флаг для определения режима
 
-    // БД
     private AppDatabase database;
     private HabitDao habitDao;
     private ExecutorService executorService;
 
-    // Предустановленные цвета
     private final String[] colors = {
             "#4CAF50", "#2196F3", "#FF9800", "#F44336",
             "#9C27B0", "#00BCD4", "#795548", "#607D8B"
@@ -62,14 +68,15 @@ public class AddEditHabitActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_habit);
 
-        // Инициализация БД
         database = AppDatabase.getInstance(this);
         habitDao = database.habitDao();
         executorService = Executors.newSingleThreadExecutor();
 
-        // Проверяем, редактирование или добавление
+        // Получаем ID привычки для редактирования
         long editId = getIntent().getLongExtra("habit_id", -1);
-        if (editId != -1) {
+        isEditMode = (editId != -1);
+
+        if (isEditMode) {
             loadHabitForEdit(editId);
         }
 
@@ -87,7 +94,10 @@ public class AddEditHabitActivity extends AppCompatActivity {
         etReminderTime = findViewById(R.id.etReminderTime);
         etTriggerCondition = findViewById(R.id.etTriggerCondition);
         colorContainer = findViewById(R.id.colorContainer);
-        toggleTargetDays = findViewById(R.id.toggleTargetDays);
+        rgTargetDays = findViewById(R.id.rgTargetDays);
+        rb7Days = findViewById(R.id.rb7Days);
+        rb21Days = findViewById(R.id.rb21Days);
+        rb100Days = findViewById(R.id.rb100Days);
         btnSave = findViewById(R.id.btnSave);
         btnCancel = findViewById(R.id.btnCancel);
     }
@@ -100,7 +110,7 @@ public class AddEditHabitActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        if (editHabit != null) {
+        if (isEditMode) {
             toolbar.setTitle("Редактирование привычки");
         } else {
             toolbar.setTitle("Добавление привычки");
@@ -108,72 +118,50 @@ public class AddEditHabitActivity extends AppCompatActivity {
     }
 
     private void setupListeners() {
-        btnSave.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                saveHabit();
-            }
-        });
+        btnSave.setOnClickListener(v -> saveHabit());
+        btnCancel.setOnClickListener(v -> finish());
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        // Выбор целевой периодичности
-        toggleTargetDays.addOnButtonCheckedListener(new MaterialButtonToggleGroup.OnButtonCheckedListener() {
-            @Override
-            public void onButtonChecked(MaterialButtonToggleGroup group, int checkedId, boolean isChecked) {
-                if (isChecked) {
-                    if (checkedId == R.id.btn7Days) {
-                        selectedTargetDays = 7;
-                    } else if (checkedId == R.id.btn21Days) {
-                        selectedTargetDays = 21;
-                    } else if (checkedId == R.id.btn100Days) {
-                        selectedTargetDays = 100;
-                    }
-                }
+        rgTargetDays.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb7Days) {
+                selectedTargetDays = 7;
+            } else if (checkedId == R.id.rb21Days) {
+                selectedTargetDays = 21;
+            } else if (checkedId == R.id.rb100Days) {
+                selectedTargetDays = 100;
             }
         });
     }
 
     private void setupFrequencyDropdown() {
-        String[] frequencies = {"Ежедневно", "Еженедельно", "Пользовательская"};
-        android.widget.ArrayAdapter<String> adapter = new android.widget.ArrayAdapter<>(
+        String[] frequencies = {"Ежедневно", "Еженедельно"};
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_dropdown_item_1line, frequencies);
         actFrequency.setAdapter(adapter);
+
         actFrequency.setOnItemClickListener((parent, view, position, id) -> {
-            switch (position) {
-                case 0:
-                    selectedFrequency = "daily";
-                    break;
-                case 1:
-                    selectedFrequency = "weekly";
-                    break;
-                case 2:
-                    selectedFrequency = "custom";
-                    break;
+            if (position == 0) {
+                selectedFrequency = "daily";
+            } else {
+                selectedFrequency = "weekly";
             }
         });
     }
 
     private void setupTimePicker() {
-        etReminderTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                int minute = calendar.get(Calendar.MINUTE);
+        etReminderTime.setInputType(android.text.InputType.TYPE_NULL);
+        etReminderTime.setFocusable(true);
+        etReminderTime.setFocusableInTouchMode(true);
+        etReminderTime.setOnClickListener(v -> {
+            Calendar calendar = Calendar.getInstance();
+            int hour = calendar.get(Calendar.HOUR_OF_DAY);
+            int minute = calendar.get(Calendar.MINUTE);
 
-                TimePickerDialog timePicker = new TimePickerDialog(AddEditHabitActivity.this,
-                        (view, hourOfDay, minuteOfHour) -> {
-                            String time = String.format("%02d:%02d", hourOfDay, minuteOfHour);
-                            etReminderTime.setText(time);
-                        }, hour, minute, true);
-                timePicker.show();
-            }
+            TimePickerDialog timePicker = new TimePickerDialog(AddEditHabitActivity.this,
+                    (view, hourOfDay, minuteOfHour) -> {
+                        String time = String.format("%02d:%02d", hourOfDay, minuteOfHour);
+                        etReminderTime.setText(time);
+                    }, hour, minute, true);
+            timePicker.show();
         });
     }
 
@@ -189,12 +177,9 @@ public class AddEditHabitActivity extends AppCompatActivity {
             colorCard.setClickable(true);
             colorCard.setFocusable(true);
 
-            colorCard.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    selectedColor = colorHex;
-                    highlightSelectedColor(colorCard);
-                }
+            colorCard.setOnClickListener(v -> {
+                selectedColor = colorHex;
+                highlightSelectedColor(colorCard);
             });
 
             colorContainer.addView(colorCard);
@@ -216,19 +201,13 @@ public class AddEditHabitActivity extends AppCompatActivity {
     }
 
     private void loadHabitForEdit(long habitId) {
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                editHabit = habitDao.getHabitById(habitId);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (editHabit != null) {
-                            fillFieldsWithHabitData();
-                        }
-                    }
-                });
-            }
+        executorService.execute(() -> {
+            editHabit = habitDao.getHabitById(habitId);
+            runOnUiThread(() -> {
+                if (editHabit != null) {
+                    fillFieldsWithHabitData();
+                }
+            });
         });
     }
 
@@ -238,39 +217,28 @@ public class AddEditHabitActivity extends AppCompatActivity {
         selectedTargetDays = editHabit.getTargetDays();
         selectedFrequency = editHabit.getFrequency();
 
-        // Частота
-        switch (selectedFrequency) {
-            case "daily":
-                actFrequency.setText("Ежедневно", false);
-                break;
-            case "weekly":
-                actFrequency.setText("Еженедельно", false);
-                break;
-            case "custom":
-                actFrequency.setText("Пользовательская", false);
-                break;
+        if (selectedFrequency.equals("daily")) {
+            actFrequency.setText("Ежедневно");
+        } else {
+            actFrequency.setText("Еженедельно");
         }
 
-        // Время напоминания
         if (editHabit.getReminderTime() != null && !editHabit.getReminderTime().isEmpty()) {
             etReminderTime.setText(editHabit.getReminderTime());
         }
 
-        // Триггер-условие
         if (editHabit.getTriggerCondition() != null && !editHabit.getTriggerCondition().isEmpty()) {
             etTriggerCondition.setText(editHabit.getTriggerCondition());
         }
 
-        // Целевая периодичность
         if (selectedTargetDays == 7) {
-            toggleTargetDays.check(R.id.btn7Days);
+            rb7Days.setChecked(true);
         } else if (selectedTargetDays == 21) {
-            toggleTargetDays.check(R.id.btn21Days);
+            rb21Days.setChecked(true);
         } else if (selectedTargetDays == 100) {
-            toggleTargetDays.check(R.id.btn100Days);
+            rb100Days.setChecked(true);
         }
 
-        // Подсветка выбранного цвета
         for (int i = 0; i < colorContainer.getChildCount() && i < colors.length; i++) {
             if (colors[i].equals(selectedColor)) {
                 highlightSelectedColor((CardView) colorContainer.getChildAt(i));
@@ -298,39 +266,65 @@ public class AddEditHabitActivity extends AppCompatActivity {
 
         final String finalReminderTime = reminderTime;
         final String finalTriggerCondition = triggerCondition;
+        final boolean fromFullInfo = getIntent().getBooleanExtra("from_full_info", false);
+        final long habitIdForReturn = getIntent().getLongExtra("habit_id", -1);
 
-        executorService.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (editHabit != null) {
-                    // Редактирование
-                    editHabit.setName(name);
-                    editHabit.setFrequency(selectedFrequency);
-                    editHabit.setReminderTime(finalReminderTime);
-                    editHabit.setColor(selectedColor);
-                    editHabit.setTriggerCondition(finalTriggerCondition);
-                    editHabit.setTargetDays(selectedTargetDays);
-                    habitDao.update(editHabit);
-                } else {
-                    // Добавление новой привычки
-                    Habit newHabit = new Habit(
-                            name, selectedFrequency, finalReminderTime,
-                            "ic_default", selectedColor, finalTriggerCondition,
-                            selectedTargetDays
+        executorService.execute(() -> {
+            long savedId = -1;
+            if (editHabit != null) {
+                // Редактирование существующей привычки
+                editHabit.setName(name);
+                editHabit.setFrequency(selectedFrequency);
+                editHabit.setReminderTime(finalReminderTime);
+                editHabit.setColor(selectedColor);
+                editHabit.setTriggerCondition(finalTriggerCondition);
+                editHabit.setTargetDays(selectedTargetDays);
+                habitDao.update(editHabit);
+                savedId = editHabit.getId();
+
+                if (finalReminderTime != null && !finalReminderTime.isEmpty()) {
+                    ReminderAlarmManager.rescheduleReminder(
+                            AddEditHabitActivity.this,
+                            savedId,
+                            name,
+                            finalReminderTime
                     );
-                    habitDao.insert(newHabit);
+                } else {
+                    ReminderAlarmManager.cancelReminder(AddEditHabitActivity.this, savedId);
                 }
+            } else {
+                // Создание новой привычки
+                Habit newHabit = new Habit(
+                        name, selectedFrequency, finalReminderTime,
+                        "ic_default", selectedColor, finalTriggerCondition,
+                        selectedTargetDays
+                );
+                savedId = habitDao.insert(newHabit);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(AddEditHabitActivity.this,
-                                editHabit != null ? "Привычка обновлена" : "Привычка добавлена",
-                                Toast.LENGTH_SHORT).show();
-                        finish();
-                    }
-                });
+                if (finalReminderTime != null && !finalReminderTime.isEmpty()) {
+                    ReminderAlarmManager.scheduleReminder(
+                            AddEditHabitActivity.this,
+                            savedId,
+                            name,
+                            finalReminderTime
+                    );
+                }
             }
+
+            final long finalSavedId = savedId;
+            runOnUiThread(() -> {
+                Toast.makeText(AddEditHabitActivity.this,
+                        editHabit != null ? "Привычка обновлена" : "Привычка добавлена",
+                        Toast.LENGTH_SHORT).show();
+
+                if (fromFullInfo && finalSavedId != -1) {
+                    Intent intent = new Intent(AddEditHabitActivity.this, HabitFullInfoActivity.class);
+                    intent.putExtra("habit_id", finalSavedId);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(intent);
+                }
+                finish();
+            });
         });
     }
 
@@ -346,6 +340,8 @@ public class AddEditHabitActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        executorService.shutdown();
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+        }
     }
 }

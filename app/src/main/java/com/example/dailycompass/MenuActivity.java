@@ -4,15 +4,18 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+
+import com.example.dailycompass.calendar.CalendarActivity;
+import com.example.dailycompass.habits.HabitsActivity;
+import com.example.dailycompass.habits.MasteredActivity;
+import com.example.dailycompass.statistics.StatisticsActivity;
+import com.example.dailycompass.summary.DailySummaryActivity;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -36,79 +39,35 @@ public class MenuActivity extends AppCompatActivity {
         cardCalendar = findViewById(R.id.cardCalendar);
         cardExit = findViewById(R.id.cardExit);
 
-        cardHabits.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MenuActivity.this, HabitsActivity.class);
-                startActivity(intent);
-            }
+        cardHabits.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuActivity.this, HabitsActivity.class);
+            startActivity(intent);
         });
 
-        cardMastered.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MenuActivity.this, "Освоенные привычки", Toast.LENGTH_SHORT).show();
-                // startActivity(new Intent(MenuActivity.this, MasteredActivity.class));
-            }
+        cardMastered.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuActivity.this, MasteredActivity.class);
+            startActivity(intent);
         });
 
-        cardStatistics.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MenuActivity.this, "Статистика", Toast.LENGTH_SHORT).show();
-                // startActivity(new Intent(MenuActivity.this, StatisticsActivity.class));
-            }
+        cardStatistics.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuActivity.this, StatisticsActivity.class);
+            startActivity(intent);
         });
 
-        cardCalendar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MenuActivity.this, "Календарь", Toast.LENGTH_SHORT).show();
-                // startActivity(new Intent(MenuActivity.this, CalendarActivity.class));
-            }
+        cardCalendar.setOnClickListener(v -> {
+            Intent intent = new Intent(MenuActivity.this, CalendarActivity.class);
+            startActivity(intent);
         });
 
-        cardExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showExitDialog();
-            }
-        });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_theme_light) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-            Toast.makeText(this, "Светлая тема", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (id == R.id.action_theme_dark) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            Toast.makeText(this, "Тёмная тема", Toast.LENGTH_SHORT).show();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        cardExit.setOnClickListener(v -> showExitDialog());
     }
 
     private void showExitDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Выход из приложения");
         builder.setMessage("Вы уверены, что хотите выйти?");
-        builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                finishAffinity();
-            }
-        });
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
+        builder.setPositiveButton("Да", (dialog, which) -> finishAffinity());
         builder.setNegativeButton("Отмена", null);
         builder.show();
     }

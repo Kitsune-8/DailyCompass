@@ -8,7 +8,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/photo_8"
+        android:src="@drawable/photo_2"
         android:scaleType="centerCrop" />
 
     <!-- Оверлей -->
@@ -30,26 +30,25 @@
             android:background="#4CAF50"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:navigationIcon="?attr/homeAsUpIndicator"
-            app:title="Мои привычки"
+            app:title="Освоенные привычки"
             app:titleTextColor="#FFFFFF" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvHabits"
+            android:id="@+id/rvMasteredHabits"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             android:padding="8dp"
             android:clipToPadding="false" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fabAddHabit"
+        <TextView
+            android:id="@+id/tvEmpty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:layout_margin="16dp"
-            android:src="@android:drawable/ic_input_add"
-            android:tint="#FFFFFF"
-            app:backgroundTint="#4CAF50" />
+            android:layout_gravity="center"
+            android:text="Пока нет освоенных привычек"
+            android:textSize="16sp"
+            android:textColor="#666666"
+            android:visibility="gone" />
 
     </LinearLayout>
 

@@ -1,28 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="com.example.dailycompass">
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
+        android:name=".DataSaveHelper"
         android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Ежедневный компас"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DailyCompass">
-        <activity
-            android:name=".MenuActivity"
-            android:exported="false" />
+
         <activity
             android:name=".SplashActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MenuActivity"
+            android:exported="false"
+            android:theme="@style/Theme.DailyCompass" />
+
+        <activity
+            android:name=".habits.HabitsActivity"
+            android:exported="false"
+            android:parentActivityName=".MenuActivity" />
+
+        <activity
+            android:name=".habits.AddEditHabitActivity"
+            android:exported="false"
+            android:parentActivityName=".habits.HabitsActivity" />
+
+        <activity
+            android:name=".habits.HabitFullInfoActivity"
+            android:exported="false"
+            android:parentActivityName=".habits.HabitsActivity" />
+
+        <activity
+            android:name=".habits.MasteredActivity"
+            android:exported="false"
+            android:parentActivityName=".MenuActivity" />
+
+        <activity
+            android:name=".statistics.StatisticsActivity"
+            android:exported="false"
+            android:parentActivityName=".MenuActivity" />
+
+        <activity
+            android:name=".calendar.CalendarActivity"
+            android:exported="false"
+            android:parentActivityName=".MenuActivity" />
+
+        <activity
+            android:name=".summary.DailySummaryActivity"
+            android:exported="false"
+            android:parentActivityName=".MenuActivity" />
+
+        <receiver
+            android:name=".utils.ReminderReceiver"
+            android:exported="true" />
+
+        <receiver
+            android:name=".utils.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

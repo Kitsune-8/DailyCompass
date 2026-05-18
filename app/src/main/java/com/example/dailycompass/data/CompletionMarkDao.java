@@ -3,6 +3,7 @@ package com.example.dailycompass.data;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import com.example.dailycompass.models.CompletionMark;
 
@@ -13,6 +14,9 @@ public interface CompletionMarkDao {
 
     @Insert
     void insert(CompletionMark mark);
+
+    @Update
+    void update(CompletionMark mark);
 
     @Query("SELECT * FROM completion_marks WHERE habitId = :habitId AND date = :date")
     CompletionMark getMarkByDate(long habitId, long date);

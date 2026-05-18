@@ -50,15 +50,15 @@ public class HabitAdapter extends RecyclerView.Adapter<HabitViewHolder> {
 
         holder.tvName.setText(habit.getName());
 
-        // Установка цвета карточки
+        // Установка цвета карточки с прозрачностью 40% видимости (60% прозрачности)
         try {
-            int color = Color.parseColor(habit.getColor());
-            holder.cardView.setCardBackgroundColor(color);
+            int originalColor = Color.parseColor(habit.getColor());
+            int transparentColor = Color.argb(102, Color.red(originalColor), Color.green(originalColor), Color.blue(originalColor));
+            holder.cardView.setCardBackgroundColor(transparentColor);
         } catch (Exception e) {
-            holder.cardView.setCardBackgroundColor(Color.parseColor("#4CAF50"));
+            holder.cardView.setCardBackgroundColor(Color.parseColor("#664CAF50"));
         }
 
-        // Отображение текущей серии
         int streak = habit.getCurrentStreak();
         if (streak > 0) {
             holder.tvStreak.setText(streak + " дн");
@@ -67,7 +67,6 @@ public class HabitAdapter extends RecyclerView.Adapter<HabitViewHolder> {
             holder.tvStreak.setVisibility(View.GONE);
         }
 
-        // Триггер-условие
         if (habit.getTriggerCondition() != null && !habit.getTriggerCondition().isEmpty()) {
             holder.tvTrigger.setText("📌 " + habit.getTriggerCondition());
             holder.tvTrigger.setVisibility(View.VISIBLE);
@@ -75,25 +74,21 @@ public class HabitAdapter extends RecyclerView.Adapter<HabitViewHolder> {
             holder.tvTrigger.setVisibility(View.GONE);
         }
 
-        // Частота
         String frequencyText = getFrequencyText(habit.getFrequency());
         holder.tvFrequency.setText(frequencyText);
 
-        // Время напоминания
         if (habit.getReminderTime() != null && !habit.getReminderTime().isEmpty()) {
             holder.tvReminder.setText("⏰ " + habit.getReminderTime());
         } else {
             holder.tvReminder.setText("");
         }
 
-        // Обработчик клика по карточке (редактирование)
         holder.cardView.setOnClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onHabitClick(habit);
             }
         });
 
-        // Обработчик долгого клика (удаление)
         holder.cardView.setOnLongClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onHabitLongClick(habit);
@@ -101,7 +96,6 @@ public class HabitAdapter extends RecyclerView.Adapter<HabitViewHolder> {
             return true;
         });
 
-        // Обработчик кнопки "Отметить выполнение"
         holder.btnComplete.setOnClickListener(v -> {
             if (completeClickListener != null) {
                 completeClickListener.onCompleteClick(habit);
@@ -134,8 +128,6 @@ public class HabitAdapter extends RecyclerView.Adapter<HabitViewHolder> {
                 return "📅 Ежедневно";
             case "weekly":
                 return "📆 Еженедельно";
-            case "custom":
-                return "⚙️ Пользовательская";
             default:
                 return "📅 Ежедневно";
         }

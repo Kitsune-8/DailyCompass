@@ -49,4 +49,7 @@ dependencies {
 
     // CardView
     implementation("androidx.cardview:cardview:1.0.0")
+
+    // WorkManager (обязательно!)
+    implementation("androidx.work:work-runtime:2.9.0")
 }

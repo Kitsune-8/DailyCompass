@@ -1,198 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F5F5F5">
+    android:layout_height="match_parent">
 
-    <!-- Toolbar с кнопкой "Назад" -->
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="#4CAF50"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:navigationIcon="?attr/homeAsUpIndicator"
-        app:title="Добавление привычки"
-        app:titleTextColor="#FFFFFF" />
-
-    <!-- ScrollView для прокрутки содержимого -->
-    <ScrollView
+    <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:src="@drawable/photo_1"
+        android:scaleType="centerCrop" />
 
-        <LinearLayout
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/overlay_white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="?attr/actionBarSize"
+            android:background="#4CAF50"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:title="Добавление привычки"
+            app:titleTextColor="#FFFFFF" />
 
-            <!-- Название привычки -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:hint="Название привычки"
-                app:errorEnabled="true">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Частота -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-                android:hint="Частота">
-
-                <AutoCompleteTextView
-                    android:id="@+id/actFrequency"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    android:text="Ежедневно" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Время напоминания -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:hint="Время напоминания (необязательно)">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etReminderTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="time"
-                    android:clickable="true"
-                    android:focusable="true" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Триггер-условие -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                android:hint="Триггер-условие (необязательно)">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etTriggerCondition"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textCapSentences"
-                    android:hint="Например: после чистки зубов" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Цвет (выбор из предустановленных) -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Цвет привычки"
-                android:textSize="14sp"
-                android:textColor="#757575" />
-
-            <LinearLayout
-                android:id="@+id/colorContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <!-- Цвета будут добавлены динамически в коде -->
-
-            </LinearLayout>
-
-            <!-- Целевая периодичность -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Целевая периодичность"
-                android:textSize="14sp"
-                android:textColor="#757575" />
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <com.google.android.material.button.MaterialButtonToggleGroup
-                    android:id="@+id/toggleTargetDays"
+                <!-- Название привычки -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    style="@style/CustomTextInputLayout"
+                    android:hint="Название привычки"
+                    app:errorEnabled="true">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
+                        android:textColor="#333333"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Частота -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    style="@style/CustomExposedDropdownMenu"
+                    android:hint="Частота">
+
+                    <AutoCompleteTextView
+                        android:id="@+id/actFrequency"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:text="Ежедневно"
+                        android:textColor="#333333"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Время напоминания (только через диалог) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    style="@style/CustomTextInputLayout"
+                    android:hint="Время напоминания (необязательно)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etReminderTime"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="none"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:textColor="#333333"
+                        android:cursorVisible="false" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Триггер-условие -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    style="@style/CustomTextInputLayout"
+                    android:hint="Триггер-условие (необязательно)">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTriggerCondition"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapSentences"
+                        android:textColor="#333333"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Цвет привычки -->
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:singleSelection="true">
+                    android:layout_marginTop="16dp"
+                    android:text="Цвет привычки"
+                    android:textSize="14sp"
+                    android:textColor="#333333"
+                    android:textStyle="bold" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn7Days"
-                        style="@style/Widget.Material3.Button.ToggleButton"
-                        android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/colorContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:paddingBottom="8dp" />
+
+                <!-- Целевая периодичность -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Целевая периодичность"
+                    android:textSize="14sp"
+                    android:textColor="#333333"
+                    android:textStyle="bold" />
+
+                <RadioGroup
+                    android:id="@+id/rgTargetDays"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rb7Days"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="7 дней" />
+                        android:layout_weight="1"
+                        android:text="7 дней"
+                        android:textColor="#333333"
+                        android:checked="true" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn21Days"
-                        style="@style/Widget.Material3.Button.ToggleButton"
-                        android:layout_width="wrap_content"
+                    <RadioButton
+                        android:id="@+id/rb21Days"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="21 день" />
+                        android:layout_weight="1"
+                        android:text="21 день"
+                        android:textColor="#333333" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btn100Days"
-                        style="@style/Widget.Material3.Button.ToggleButton"
-                        android:layout_width="wrap_content"
+                    <RadioButton
+                        android:id="@+id/rb100Days"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="100 дней" />
+                        android:layout_weight="1"
+                        android:text="100 дней"
+                        android:textColor="#333333" />
 
-                </com.google.android.material.button.MaterialButtonToggleGroup>
+                </RadioGroup>
+
+                <!-- Кнопки -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/btnCancel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="8dp"
+                        android:text="Отмена"
+                        android:backgroundTint="#9E9E9E" />
+
+                    <Button
+                        android:id="@+id/btnSave"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="Сохранить"
+                        android:backgroundTint="#4CAF50" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
-            <!-- Кнопки Сохранить и Отмена -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:orientation="horizontal"
-                android:gravity="center">
+        </ScrollView>
 
-                <Button
-                    android:id="@+id/btnCancel"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="Отмена"
-                    android:backgroundTint="#9E9E9E" />
+    </LinearLayout>
 
-                <Button
-                    android:id="@+id/btnSave"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="Сохранить"
-                    android:backgroundTint="#4CAF50" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </ScrollView>
-
-</LinearLayout>
+</FrameLayout>

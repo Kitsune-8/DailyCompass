@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/action_daily_summary"
+        android:title="Ежедневная сводка"
+        app:showAsAction="never" />
+
+    <item
         android:id="@+id/action_theme_light"
         android:title="Светлая тема"
         app:showAsAction="never" />
